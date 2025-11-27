@@ -1,0 +1,3126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UR20 Swarm Control v2.2.0</title>
+    <style>
+        /* Design System Variables */
+        :root {
+            /* Primitive Color Tokens */
+            --color-white: rgba(255, 255, 255, 1);
+            --color-black: rgba(0, 0, 0, 1);
+            --color-cream-50: rgba(252, 252, 249, 1);
+            --color-cream-100: rgba(255, 255, 253, 1);
+            --color-gray-200: rgba(245, 245, 245, 1);
+            --color-gray-300: rgba(167, 169, 169, 1);
+            --color-gray-400: rgba(119, 124, 124, 1);
+            --color-slate-500: rgba(98, 108, 113, 1);
+            --color-brown-600: rgba(94, 82, 64, 1);
+            --color-charcoal-700: rgba(31, 33, 33, 1);
+            --color-charcoal-800: rgba(38, 40, 40, 1);
+            --color-slate-900: rgba(19, 52, 59, 1);
+            --color-teal-300: rgba(50, 184, 198, 1);
+            --color-teal-400: rgba(45, 166, 178, 1);
+            --color-teal-500: rgba(33, 128, 141, 1);
+            --color-teal-600: rgba(29, 116, 128, 1);
+            --color-teal-700: rgba(26, 104, 115, 1);
+            --color-teal-800: rgba(41, 150, 161, 1);
+            --color-red-400: rgba(255, 84, 89, 1);
+            --color-red-500: rgba(192, 21, 47, 1);
+            --color-orange-400: rgba(230, 129, 97, 1);
+            --color-orange-500: rgba(168, 75, 47, 1);
+
+            /* RGB versions for opacity control */
+            --color-brown-600-rgb: 94, 82, 64;
+            --color-teal-500-rgb: 33, 128, 141;
+            --color-slate-900-rgb: 19, 52, 59;
+            --color-slate-500-rgb: 98, 108, 113;
+            --color-red-500-rgb: 192, 21, 47;
+            --color-red-400-rgb: 255, 84, 89;
+            --color-orange-500-rgb: 168, 75, 47;
+            --color-orange-400-rgb: 230, 129, 97;
+
+            /* Background color tokens */
+            --color-bg-1: rgba(59, 130, 246, 0.08);
+            --color-bg-2: rgba(245, 158, 11, 0.08);
+            --color-bg-3: rgba(34, 197, 94, 0.08);
+            --color-bg-4: rgba(239, 68, 68, 0.08);
+            --color-bg-5: rgba(147, 51, 234, 0.08);
+            --color-bg-6: rgba(249, 115, 22, 0.08);
+            --color-bg-7: rgba(236, 72, 153, 0.08);
+            --color-bg-8: rgba(6, 182, 212, 0.08);
+
+            /* Semantic Color Tokens */
+            --color-background: var(--color-cream-50);
+            --color-surface: var(--color-cream-100);
+            --color-text: var(--color-slate-900);
+            --color-text-secondary: var(--color-slate-500);
+            --color-primary: var(--color-teal-500);
+            --color-primary-hover: var(--color-teal-600);
+            --color-primary-active: var(--color-teal-700);
+            --color-secondary: rgba(var(--color-brown-600-rgb), 0.12);
+            --color-secondary-hover: rgba(var(--color-brown-600-rgb), 0.2);
+            --color-secondary-active: rgba(var(--color-brown-600-rgb), 0.25);
+            --color-border: rgba(var(--color-brown-600-rgb), 0.2);
+            --color-btn-primary-text: var(--color-cream-50);
+            --color-card-border: rgba(var(--color-brown-600-rgb), 0.12);
+            --color-card-border-inner: rgba(var(--color-brown-600-rgb), 0.12);
+            --color-error: var(--color-red-500);
+            --color-success: var(--color-teal-500);
+            --color-warning: var(--color-orange-500);
+            --color-info: var(--color-slate-500);
+            --color-focus-ring: rgba(var(--color-teal-500-rgb), 0.4);
+            --color-select-caret: rgba(var(--color-slate-900-rgb), 0.8);
+
+            /* Typography */
+            --font-family-base: "FKGroteskNeue", "Geist", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            --font-family-mono: "Berkeley Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            --font-size-xs: 11px;
+            --font-size-sm: 12px;
+            --font-size-base: 14px;
+            --font-size-md: 14px;
+            --font-size-lg: 16px;
+            --font-size-xl: 18px;
+            --font-size-2xl: 20px;
+            --font-size-3xl: 24px;
+            --font-size-4xl: 30px;
+            --font-weight-normal: 400;
+            --font-weight-medium: 500;
+            --font-weight-semibold: 550;
+            --font-weight-bold: 600;
+            --line-height-tight: 1.2;
+            --line-height-normal: 1.5;
+            --letter-spacing-tight: -0.01em;
+
+            /* Spacing */
+            --space-0: 0;
+            --space-1: 1px;
+            --space-2: 2px;
+            --space-4: 4px;
+            --space-6: 6px;
+            --space-8: 8px;
+            --space-10: 10px;
+            --space-12: 12px;
+            --space-16: 16px;
+            --space-20: 20px;
+            --space-24: 24px;
+            --space-32: 32px;
+
+            /* Border Radius */
+            --radius-sm: 6px;
+            --radius-base: 8px;
+            --radius-md: 10px;
+            --radius-lg: 12px;
+            --radius-full: 9999px;
+
+            /* Shadows */
+            --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.02);
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.04), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.04), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
+            --shadow-inset-sm: inset 0 1px 0 rgba(255, 255, 255, 0.15), inset 0 -1px 0 rgba(0, 0, 0, 0.03);
+
+            /* Animation */
+            --duration-fast: 150ms;
+            --duration-normal: 250ms;
+            --ease-standard: cubic-bezier(0.16, 1, 0.3, 1);
+
+            /* Custom App Variables */
+            --sidebar-width: 280px;
+            --header-height: 64px;
+            --bottom-sheet-height: 280px;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --color-gray-400-rgb: 119, 124, 124;
+                --color-teal-300-rgb: 50, 184, 198;
+                --color-gray-300-rgb: 167, 169, 169;
+                --color-gray-200-rgb: 245, 245, 245;
+                --color-bg-1: rgba(29, 78, 216, 0.15);
+                --color-bg-2: rgba(180, 83, 9, 0.15);
+                --color-bg-3: rgba(21, 128, 61, 0.15);
+                --color-bg-4: rgba(185, 28, 28, 0.15);
+                --color-bg-5: rgba(107, 33, 168, 0.15);
+                --color-bg-6: rgba(194, 65, 12, 0.15);
+                --color-bg-7: rgba(190, 24, 93, 0.15);
+                --color-bg-8: rgba(8, 145, 178, 0.15);
+                --color-background: var(--color-charcoal-700);
+                --color-surface: var(--color-charcoal-800);
+                --color-text: var(--color-gray-200);
+                --color-text-secondary: rgba(var(--color-gray-300-rgb), 0.7);
+                --color-primary: var(--color-teal-300);
+                --color-primary-hover: var(--color-teal-400);
+                --color-primary-active: var(--color-teal-800);
+                --color-secondary: rgba(var(--color-gray-400-rgb), 0.15);
+                --color-secondary-hover: rgba(var(--color-gray-400-rgb), 0.25);
+                --color-secondary-active: rgba(var(--color-gray-400-rgb), 0.3);
+                --color-border: rgba(var(--color-gray-400-rgb), 0.3);
+                --color-error: var(--color-red-400);
+                --color-success: var(--color-teal-300);
+                --color-warning: var(--color-orange-400);
+                --color-info: var(--color-gray-300);
+                --color-focus-ring: rgba(var(--color-teal-300-rgb), 0.4);
+                --color-btn-primary-text: var(--color-slate-900);
+                --color-card-border: rgba(var(--color-gray-400-rgb), 0.2);
+                --color-card-border-inner: rgba(var(--color-gray-400-rgb), 0.15);
+                --shadow-inset-sm: inset 0 1px 0 rgba(255, 255, 255, 0.1), inset 0 -1px 0 rgba(0, 0, 0, 0.15);
+                --color-select-caret: rgba(var(--color-gray-200-rgb), 0.8);
+            }
+        }
+
+        [data-theme="dark"] {
+            --color-gray-400-rgb: 119, 124, 124;
+            --color-teal-300-rgb: 50, 184, 198;
+            --color-gray-300-rgb: 167, 169, 169;
+            --color-gray-200-rgb: 245, 245, 245;
+            --color-bg-1: rgba(29, 78, 216, 0.15);
+            --color-bg-2: rgba(180, 83, 9, 0.15);
+            --color-bg-3: rgba(21, 128, 61, 0.15);
+            --color-bg-4: rgba(185, 28, 28, 0.15);
+            --color-bg-5: rgba(107, 33, 168, 0.15);
+            --color-bg-6: rgba(194, 65, 12, 0.15);
+            --color-bg-7: rgba(190, 24, 93, 0.15);
+            --color-bg-8: rgba(8, 145, 178, 0.15);
+            --color-background: var(--color-charcoal-700);
+            --color-surface: var(--color-charcoal-800);
+            --color-text: var(--color-gray-200);
+            --color-text-secondary: rgba(var(--color-gray-300-rgb), 0.7);
+            --color-primary: var(--color-teal-300);
+            --color-primary-hover: var(--color-teal-400);
+            --color-primary-active: var(--color-teal-800);
+            --color-secondary: rgba(var(--color-gray-400-rgb), 0.15);
+            --color-secondary-hover: rgba(var(--color-gray-400-rgb), 0.25);
+            --color-secondary-active: rgba(var(--color-gray-400-rgb), 0.3);
+            --color-border: rgba(var(--color-gray-400-rgb), 0.3);
+            --color-error: var(--color-red-400);
+            --color-success: var(--color-teal-300);
+            --color-warning: var(--color-orange-400);
+            --color-info: var(--color-gray-300);
+            --color-focus-ring: rgba(var(--color-teal-300-rgb), 0.4);
+            --color-btn-primary-text: var(--color-slate-900);
+            --color-card-border: rgba(var(--color-gray-400-rgb), 0.2);
+            --color-card-border-inner: rgba(var(--color-gray-400-rgb), 0.15);
+            --shadow-inset-sm: inset 0 1px 0 rgba(255, 255, 255, 0.1), inset 0 -1px 0 rgba(0, 0, 0, 0.15);
+            --color-select-caret: rgba(var(--color-gray-200-rgb), 0.8);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-family-base);
+            background-color: var(--color-background);
+            color: var(--color-text);
+            line-height: var(--line-height-normal);
+            font-size: var(--font-size-base);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* App Layout */
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* Header - Mobile First */
+        .app-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: var(--header-height);
+            background-color: var(--color-surface);
+            border-bottom: 1px solid var(--color-card-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 var(--space-16);
+            z-index: 100;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: var(--space-12);
+        }
+
+        .header-logo {
+            font-size: var(--font-size-xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-text);
+            display: flex;
+            align-items: center;
+            gap: var(--space-8);
+        }
+
+        .header-logo-icon {
+            font-size: var(--font-size-3xl);
+        }
+
+        .header-title {
+            display: none;
+        }
+
+        .header-center {
+            display: flex;
+            align-items: center;
+            gap: var(--space-12);
+        }
+
+        .current-persona {
+            display: flex;
+            align-items: center;
+            gap: var(--space-8);
+            background: var(--color-secondary);
+            padding: var(--space-6) var(--space-12);
+            border-radius: var(--radius-full);
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+        }
+
+        .persona-icon {
+            font-size: var(--font-size-lg);
+        }
+
+        .persona-name-mobile {
+            display: none;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: var(--space-12);
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: var(--space-6);
+            font-size: var(--font-size-sm);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--color-success);
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        .status-text {
+            display: none;
+        }
+
+        .menu-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            background: var(--color-secondary);
+            border: none;
+            border-radius: var(--radius-base);
+            cursor: pointer;
+            transition: background var(--duration-fast) var(--ease-standard);
+            font-size: var(--font-size-xl);
+        }
+
+        .menu-toggle:hover {
+            background: var(--color-secondary-hover);
+        }
+
+        .menu-toggle:active {
+            background: var(--color-secondary-active);
+        }
+
+        /* Sidebar - Hidden on Mobile */
+        .sidebar {
+            display: none;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-top: var(--header-height);
+            padding: var(--space-16);
+            overflow-y: auto;
+        }
+
+        /* Bottom Sheet Navigation - Mobile Only */
+        .bottom-sheet-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 150;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity var(--duration-normal) var(--ease-standard),
+                        visibility var(--duration-normal) var(--ease-standard);
+        }
+
+        .bottom-sheet-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .bottom-sheet {
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--color-surface);
+            border-top-left-radius: var(--radius-lg);
+            border-top-right-radius: var(--radius-lg);
+            box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.15);
+            z-index: 200;
+            transform: translateY(100%);
+            transition: transform var(--duration-normal) var(--ease-standard);
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .bottom-sheet.active {
+            transform: translateY(0);
+        }
+
+        .bottom-sheet-handle {
+            display: flex;
+            justify-content: center;
+            padding: var(--space-12) 0;
+            cursor: grab;
+        }
+
+        .bottom-sheet-handle-bar {
+            width: 40px;
+            height: 4px;
+            background-color: var(--color-border);
+            border-radius: var(--radius-full);
+        }
+
+        .bottom-sheet-header {
+            padding: 0 var(--space-20) var(--space-16) var(--space-20);
+            border-bottom: 1px solid var(--color-card-border);
+        }
+
+        .bottom-sheet-title {
+            font-size: var(--font-size-xl);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text);
+        }
+
+        .bottom-sheet-content {
+            padding: var(--space-20);
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .persona-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-12);
+        }
+
+        .persona-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-16);
+            padding: var(--space-16);
+            background: var(--color-secondary);
+            border: 2px solid transparent;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all var(--duration-fast) var(--ease-standard);
+            min-height: 64px;
+        }
+
+        .persona-item:hover {
+            background: var(--color-secondary-hover);
+        }
+
+        .persona-item:active {
+            background: var(--color-secondary-active);
+        }
+
+        .persona-item.active {
+            border-color: var(--color-primary);
+            background: var(--color-bg-1);
+        }
+
+        .persona-item-icon {
+            font-size: 32px;
+            flex-shrink: 0;
+        }
+
+        .persona-item-content {
+            flex: 1;
+        }
+
+        .persona-item-name {
+            font-size: var(--font-size-lg);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text);
+            margin-bottom: var(--space-4);
+        }
+
+        .persona-item-desc {
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+            line-height: 1.4;
+        }
+
+        .persona-item-check {
+            font-size: var(--font-size-xl);
+            color: var(--color-primary);
+            opacity: 0;
+            transition: opacity var(--duration-fast) var(--ease-standard);
+        }
+
+        .persona-item.active .persona-item-check {
+            opacity: 1;
+        }
+
+        /* Settings in Bottom Sheet */
+        .bottom-sheet-settings {
+            border-top: 1px solid var(--color-card-border);
+            padding: var(--space-20);
+        }
+
+        .settings-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: var(--space-12) 0;
+        }
+
+        .settings-label {
+            font-size: var(--font-size-base);
+            font-weight: var(--font-weight-medium);
+            color: var(--color-text);
+        }
+
+        /* Cards */
+        .card {
+            background-color: var(--color-surface);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--color-card-border);
+            padding: var(--space-20);
+            margin-bottom: var(--space-16);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: var(--space-16);
+        }
+
+        .card-title {
+            font-size: var(--font-size-xl);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text);
+            display: flex;
+            align-items: center;
+            gap: var(--space-8);
+        }
+
+        .card-subtitle {
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+            margin-top: var(--space-4);
+        }
+
+        .card-body {
+            color: var(--color-text);
+        }
+
+        /* Status Badge */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-6);
+            padding: var(--space-6) var(--space-12);
+            border-radius: var(--radius-full);
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+        }
+
+        .status-badge--success {
+            background-color: rgba(var(--color-teal-500-rgb), 0.15);
+            color: var(--color-success);
+            border: 1px solid rgba(var(--color-teal-500-rgb), 0.25);
+        }
+
+        .status-badge--warning {
+            background-color: rgba(var(--color-orange-500-rgb), 0.15);
+            color: var(--color-warning);
+            border: 1px solid rgba(var(--color-orange-500-rgb), 0.25);
+        }
+
+        .status-badge--error {
+            background-color: rgba(var(--color-red-500-rgb), 0.15);
+            color: var(--color-error);
+            border: 1px solid rgba(var(--color-red-500-rgb), 0.25);
+        }
+
+        .status-badge--info {
+            background-color: rgba(var(--color-slate-500-rgb), 0.15);
+            color: var(--color-info);
+            border: 1px solid rgba(var(--color-slate-500-rgb), 0.25);
+        }
+
+        /* Metrics Grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--space-12);
+            margin-bottom: var(--space-16);
+        }
+
+        .metric-item {
+            background: var(--color-bg-1);
+            padding: var(--space-16);
+            border-radius: var(--radius-base);
+            border: 1px solid var(--color-card-border);
+        }
+
+        .metric-label {
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+            margin-bottom: var(--space-4);
+        }
+
+        .metric-value {
+            font-size: var(--font-size-2xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-text);
+        }
+
+        .metric-unit {
+            font-size: var(--font-size-base);
+            font-weight: var(--font-weight-normal);
+            color: var(--color-text-secondary);
+            margin-left: var(--space-4);
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-8);
+            padding: var(--space-12) var(--space-20);
+            border-radius: var(--radius-base);
+            font-size: var(--font-size-base);
+            font-weight: var(--font-weight-medium);
+            cursor: pointer;
+            border: none;
+            transition: all var(--duration-fast) var(--ease-standard);
+            text-decoration: none;
+            min-height: 44px;
+        }
+
+        .btn--primary {
+            background: var(--color-primary);
+            color: var(--color-btn-primary-text);
+        }
+
+        .btn--primary:hover {
+            background: var(--color-primary-hover);
+        }
+
+        .btn--primary:active {
+            background: var(--color-primary-active);
+        }
+
+        .btn--success {
+            background: var(--color-success);
+            color: var(--color-btn-primary-text);
+        }
+
+        .btn--success:hover {
+            opacity: 0.9;
+        }
+
+        .btn--error {
+            background: var(--color-error);
+            color: var(--color-white);
+        }
+
+        .btn--error:hover {
+            opacity: 0.9;
+        }
+
+        .btn--secondary {
+            background: var(--color-secondary);
+            color: var(--color-text);
+        }
+
+        .btn--secondary:hover {
+            background: var(--color-secondary-hover);
+        }
+
+        .btn--large {
+            padding: var(--space-20) var(--space-32);
+            font-size: var(--font-size-lg);
+            min-height: 56px;
+        }
+
+        .btn--full {
+            width: 100%;
+        }
+
+        .btn-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-12);
+            margin-bottom: var(--space-16);
+        }
+
+        /* Info List */
+        .info-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-12);
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: var(--space-12);
+            background: var(--color-bg-2);
+            border-radius: var(--radius-base);
+        }
+
+        .info-label {
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+            font-weight: var(--font-weight-medium);
+        }
+
+        .info-value {
+            font-size: var(--font-size-base);
+            color: var(--color-text);
+            font-weight: var(--font-weight-semibold);
+            text-align: right;
+        }
+
+        /* Activity Feed */
+        .activity-feed {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .activity-item {
+            display: flex;
+            gap: var(--space-12);
+            padding: var(--space-12);
+            border-bottom: 1px solid var(--color-card-border);
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-icon {
+            width: 32px;
+            height: 32px;
+            background: var(--color-bg-3);
+            border-radius: var(--radius-full);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: var(--font-size-base);
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-title {
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+            color: var(--color-text);
+            margin-bottom: var(--space-2);
+        }
+
+        .activity-time {
+            font-size: var(--font-size-xs);
+            color: var(--color-text-secondary);
+        }
+
+        /* Developer Mode Specific */
+        .video-placeholder {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            background: var(--color-bg-8);
+            border-radius: var(--radius-base);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--font-size-lg);
+            color: var(--color-text-secondary);
+            margin-bottom: var(--space-16);
+            border: 2px dashed var(--color-border);
+        }
+
+        .parameter-control {
+            margin-bottom: var(--space-16);
+        }
+
+        .parameter-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-8);
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-medium);
+            color: var(--color-text);
+        }
+
+        .parameter-value {
+            color: var(--color-primary);
+            font-weight: var(--font-weight-bold);
+        }
+
+        .slider {
+            width: 100%;
+            height: 6px;
+            border-radius: var(--radius-full);
+            background: var(--color-secondary);
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--color-primary);
+            cursor: pointer;
+        }
+
+        .slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--color-primary);
+            cursor: pointer;
+            border: none;
+        }
+
+        .toggle-switch {
+            display: flex;
+            align-items: center;
+            gap: var(--space-12);
+        }
+
+        .toggle-input {
+            position: relative;
+            width: 48px;
+            height: 24px;
+            background: var(--color-secondary);
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            transition: background var(--duration-fast) var(--ease-standard);
+        }
+
+        .toggle-input.active {
+            background: var(--color-primary);
+        }
+
+        .toggle-slider {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: var(--color-white);
+            border-radius: 50%;
+            transition: transform var(--duration-fast) var(--ease-standard);
+        }
+
+        .toggle-input.active .toggle-slider {
+            transform: translateX(24px);
+        }
+
+        /* Debug Console */
+        .debug-console {
+            background: var(--color-charcoal-800);
+            border-radius: var(--radius-base);
+            padding: var(--space-16);
+            font-family: var(--font-family-mono);
+            font-size: var(--font-size-sm);
+            max-height: 300px;
+            overflow-y: auto;
+            color: var(--color-gray-200);
+        }
+
+        .debug-line {
+            margin-bottom: var(--space-4);
+            display: flex;
+            gap: var(--space-8);
+        }
+
+        .debug-time {
+            color: var(--color-gray-400);
+        }
+
+        .debug-level-info {
+            color: var(--color-teal-300);
+        }
+
+        .debug-level-warning {
+            color: var(--color-orange-400);
+        }
+
+        .debug-level-error {
+            color: var(--color-red-400);
+        }
+
+        /* Demo Mode Specific */
+        .confidence-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--color-secondary);
+            border-radius: var(--radius-full);
+            overflow: hidden;
+            margin-top: var(--space-8);
+        }
+
+        .confidence-fill {
+            height: 100%;
+            background: var(--color-success);
+            transition: width var(--duration-normal) var(--ease-standard);
+        }
+
+        .object-card {
+            background: var(--color-bg-5);
+            border: 2px solid var(--color-card-border);
+            border-radius: var(--radius-md);
+            padding: var(--space-16);
+            margin-bottom: var(--space-12);
+        }
+
+        .object-card.selected {
+            border-color: var(--color-success);
+            background: var(--color-bg-3);
+        }
+
+        .object-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-8);
+        }
+
+        .object-name {
+            font-size: var(--font-size-lg);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text);
+        }
+
+        .decision-card {
+            background: var(--color-bg-1);
+            border: 1px solid var(--color-card-border);
+            border-radius: var(--radius-md);
+            padding: var(--space-16);
+            margin-bottom: var(--space-12);
+        }
+
+        .decision-title {
+            font-size: var(--font-size-base);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text);
+            margin-bottom: var(--space-8);
+        }
+
+        .decision-reason {
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+            line-height: 1.5;
+        }
+
+        /* Select Dropdown */
+        select {
+            width: 100%;
+            padding: var(--space-12);
+            border-radius: var(--radius-base);
+            border: 1px solid var(--color-border);
+            background: var(--color-surface);
+            color: var(--color-text);
+            font-size: var(--font-size-base);
+            font-family: var(--font-family-base);
+            cursor: pointer;
+            min-height: 44px;
+        }
+
+        select:focus {
+            outline: 2px solid var(--color-primary);
+            outline-offset: 2px;
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            gap: var(--space-8);
+            padding: var(--space-8) var(--space-12);
+            background: var(--color-secondary);
+            border-radius: var(--radius-base);
+            cursor: pointer;
+            border: none;
+            font-size: var(--font-size-lg);
+        }
+
+        /* Tablet Styles - 768px and up */
+        @media (min-width: 768px) {
+            .header-title {
+                display: inline;
+            }
+
+            .persona-name-mobile {
+                display: inline;
+            }
+
+            .status-text {
+                display: inline;
+            }
+
+            .metrics-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .main-content {
+                padding: var(--space-24);
+            }
+
+            .card {
+                padding: var(--space-24);
+            }
+        }
+
+        /* Desktop Styles - 1024px and up */
+        @media (min-width: 1024px) {
+            .app-container {
+                padding-left: var(--sidebar-width);
+            }
+
+            .menu-toggle {
+                display: none;
+            }
+
+            .bottom-sheet-overlay,
+            .bottom-sheet {
+                display: none;
+            }
+
+            .app-header {
+                left: var(--sidebar-width);
+            }
+
+            .sidebar {
+                display: flex;
+                flex-direction: column;
+                position: fixed;
+                left: 0;
+                top: 0;
+                bottom: 0;
+                width: var(--sidebar-width);
+                background-color: var(--color-surface);
+                border-right: 1px solid var(--color-card-border);
+                padding: var(--space-24);
+                z-index: 90;
+            }
+
+            .sidebar-header {
+                display: flex;
+                align-items: center;
+                gap: var(--space-12);
+                margin-bottom: var(--space-32);
+                padding-bottom: var(--space-24);
+                border-bottom: 1px solid var(--color-card-border);
+            }
+
+            .sidebar-logo {
+                font-size: 40px;
+            }
+
+            .sidebar-title {
+                flex: 1;
+            }
+
+            .sidebar-app-name {
+                font-size: var(--font-size-xl);
+                font-weight: var(--font-weight-bold);
+                color: var(--color-text);
+                line-height: 1.2;
+            }
+
+            .sidebar-version {
+                font-size: var(--font-size-xs);
+                color: var(--color-text-secondary);
+            }
+
+            .sidebar-nav {
+                flex: 1;
+            }
+
+            .nav-section {
+                margin-bottom: var(--space-24);
+            }
+
+            .nav-section-title {
+                font-size: var(--font-size-xs);
+                font-weight: var(--font-weight-bold);
+                color: var(--color-text-secondary);
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                margin-bottom: var(--space-12);
+            }
+
+            .nav-list {
+                display: flex;
+                flex-direction: column;
+                gap: var(--space-4);
+            }
+
+            .nav-item {
+                display: flex;
+                align-items: center;
+                gap: var(--space-12);
+                padding: var(--space-12) var(--space-16);
+                border-radius: var(--radius-base);
+                cursor: pointer;
+                transition: all var(--duration-fast) var(--ease-standard);
+                color: var(--color-text);
+                text-decoration: none;
+                border: 2px solid transparent;
+            }
+
+            .nav-item:hover {
+                background: var(--color-secondary);
+            }
+
+            .nav-item.active {
+                background: var(--color-bg-1);
+                border-color: var(--color-primary);
+                font-weight: var(--font-weight-semibold);
+            }
+
+            .nav-item-icon {
+                font-size: var(--font-size-2xl);
+                flex-shrink: 0;
+            }
+
+            .nav-item-content {
+                flex: 1;
+            }
+
+            .nav-item-name {
+                font-size: var(--font-size-base);
+                margin-bottom: var(--space-2);
+            }
+
+            .nav-item-desc {
+                font-size: var(--font-size-xs);
+                color: var(--color-text-secondary);
+                line-height: 1.3;
+            }
+
+            .sidebar-footer {
+                border-top: 1px solid var(--color-card-border);
+                padding-top: var(--space-16);
+            }
+
+            .metrics-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .main-content {
+                padding: var(--space-32);
+            }
+        }
+
+        /* Large Desktop - 1280px and up */
+        @media (min-width: 1280px) {
+            .metrics-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+
+            .content-grid {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: var(--space-24);
+            }
+
+            .content-grid > .card {
+                margin-bottom: 0;
+            }
+        }
+
+        /* Hidden class for view switching */
+        .view {
+            display: none;
+        }
+
+        .view.active {
+            display: block;
+        }
+
+        /* Robot Cards Grid */
+        .robot-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--space-16);
+        }
+
+        @media (min-width: 768px) {
+            .robot-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 1200px) {
+            .robot-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .robot-card {
+            background: var(--color-surface);
+            border: 2px solid var(--color-card-border);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            transition: all var(--duration-normal) var(--ease-standard);
+        }
+
+        .robot-card:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        .robot-card--active {
+            border-color: var(--color-success);
+            background: var(--color-bg-3);
+        }
+
+        .robot-card--idle {
+            border-color: var(--color-info);
+            background: var(--color-bg-1);
+        }
+
+        .robot-card--error {
+            border-color: var(--color-error);
+            background: var(--color-bg-4);
+        }
+
+        .robot-card-header {
+            padding: var(--space-16);
+            border-bottom: 1px solid var(--color-card-border-inner);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .robot-card-title {
+            font-size: var(--font-size-lg);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text);
+            margin-bottom: var(--space-4);
+        }
+
+        .robot-card-subtitle {
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+        }
+
+        .robot-card-body {
+            padding: var(--space-16);
+        }
+
+        .robot-task {
+            font-size: var(--font-size-base);
+            font-weight: var(--font-weight-medium);
+            color: var(--color-text);
+            margin-bottom: var(--space-12);
+        }
+
+        .robot-progress {
+            width: 100%;
+            height: 8px;
+            background: var(--color-secondary);
+            border-radius: var(--radius-full);
+            overflow: hidden;
+            margin-bottom: var(--space-16);
+        }
+
+        .robot-progress-bar {
+            height: 100%;
+            background: var(--color-success);
+            transition: width var(--duration-normal) var(--ease-standard);
+        }
+
+        .robot-metrics {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: var(--space-8);
+            margin-bottom: var(--space-12);
+        }
+
+        .robot-metric {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--space-4);
+            padding: var(--space-8);
+            background: var(--color-surface);
+            border-radius: var(--radius-sm);
+        }
+
+        .robot-metric-icon {
+            font-size: var(--font-size-lg);
+        }
+
+        .robot-metric-value {
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text);
+        }
+
+        .robot-actions {
+            display: flex;
+            gap: var(--space-8);
+            margin-bottom: var(--space-12);
+        }
+
+        .robot-recent {
+            padding-top: var(--space-12);
+            border-top: 1px solid var(--color-card-border-inner);
+        }
+
+        .robot-recent-title {
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-text-secondary);
+            text-transform: uppercase;
+            margin-bottom: var(--space-8);
+        }
+
+        .robot-recent-item {
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+            margin-bottom: var(--space-4);
+        }
+
+        /* Camera Grid */
+        .camera-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--space-16);
+        }
+
+        @media (min-width: 768px) {
+            .camera-grid {
+                grid-template-columns: 2fr 1fr;
+                grid-template-rows: auto;
+            }
+        }
+
+        .camera-main {
+            grid-column: 1;
+            grid-row: 1;
+        }
+
+        .camera-feed {
+            position: relative;
+            background: var(--color-charcoal-800);
+            border-radius: var(--radius-base);
+            overflow: hidden;
+            border: 2px solid var(--color-card-border);
+        }
+
+        .camera-label {
+            position: absolute;
+            top: var(--space-8);
+            left: var(--space-8);
+            background: rgba(0, 0, 0, 0.7);
+            color: var(--color-white);
+            padding: var(--space-4) var(--space-8);
+            border-radius: var(--radius-sm);
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-semibold);
+            z-index: 2;
+        }
+
+        .camera-placeholder {
+            aspect-ratio: 16 / 9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--font-size-lg);
+            color: var(--color-gray-400);
+            background: linear-gradient(135deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.4) 100%);
+        }
+
+        .camera-placeholder-small {
+            aspect-ratio: 16 / 9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--font-size-2xl);
+            color: var(--color-gray-400);
+            background: linear-gradient(135deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.4) 100%);
+        }
+
+        .camera-overlay {
+            position: absolute;
+            bottom: var(--space-8);
+            right: var(--space-8);
+            display: flex;
+            gap: var(--space-8);
+            z-index: 2;
+        }
+
+        .camera-status, .camera-fps {
+            background: rgba(0, 0, 0, 0.7);
+            color: var(--color-white);
+            padding: var(--space-4) var(--space-8);
+            border-radius: var(--radius-sm);
+            font-size: var(--font-size-xs);
+            font-weight: var(--font-weight-semibold);
+        }
+
+        .camera-status {
+            color: var(--color-red-400);
+        }
+
+        .camera-thumbnails {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--space-12);
+        }
+
+        @media (min-width: 768px) {
+            .camera-thumbnails {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .camera-thumbnail {
+            cursor: pointer;
+            transition: transform var(--duration-fast) var(--ease-standard);
+        }
+
+        .camera-thumbnail:hover {
+            transform: scale(1.05);
+        }
+
+        .camera-thumbnail .camera-feed {
+            border-color: var(--color-border);
+        }
+
+        .camera-thumbnail:hover .camera-feed {
+            border-color: var(--color-primary);
+        }
+
+        /* Quick Fixes */
+        .quick-fixes-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--space-12);
+        }
+
+        @media (min-width: 768px) {
+            .quick-fixes-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .quick-fixes-grid {
+                grid-template-columns: repeat(6, 1fr);
+            }
+        }
+
+        .quick-fix-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-8);
+            padding: var(--space-20);
+            border: 2px solid var(--color-card-border);
+            border-radius: var(--radius-md);
+            background: var(--color-surface);
+            cursor: pointer;
+            transition: all var(--duration-fast) var(--ease-standard);
+            min-height: 100px;
+        }
+
+        .quick-fix-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .quick-fix-btn--primary {
+            background: var(--color-bg-1);
+            border-color: var(--color-primary);
+        }
+
+        .quick-fix-btn--success {
+            background: var(--color-bg-3);
+            border-color: var(--color-success);
+        }
+
+        .quick-fix-btn--error {
+            background: var(--color-bg-4);
+            border-color: var(--color-error);
+        }
+
+        .quick-fix-btn--warning {
+            background: var(--color-bg-2);
+            border-color: var(--color-warning);
+        }
+
+        .quick-fix-btn--info {
+            background: var(--color-bg-1);
+            border-color: var(--color-info);
+        }
+
+        .quick-fix-btn--secondary {
+            background: var(--color-secondary);
+            border-color: var(--color-border);
+        }
+
+        .quick-fix-icon {
+            font-size: var(--font-size-3xl);
+        }
+
+        .quick-fix-label {
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text);
+            text-align: center;
+        }
+
+        /* Form Styles */
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--space-12);
+            margin-bottom: var(--space-16);
+        }
+
+        @media (min-width: 768px) {
+            .form-row {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .form-group {
+            margin-bottom: var(--space-16);
+        }
+
+        .form-label {
+            display: block;
+            font-size: var(--font-size-sm);
+            font-weight: var(--font-weight-semibold);
+            color: var(--color-text);
+            margin-bottom: var(--space-8);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: var(--space-12);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-base);
+            background: var(--color-surface);
+            color: var(--color-text);
+            font-size: var(--font-size-base);
+            font-family: var(--font-family-base);
+            transition: border-color var(--duration-fast) var(--ease-standard);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: var(--focus-ring);
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: var(--space-12);
+            margin-top: var(--space-20);
+        }
+
+        .recent-reports {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-12);
+        }
+
+        .recent-report-item {
+            padding: var(--space-12);
+            background: var(--color-bg-4);
+            border-radius: var(--radius-base);
+            border: 1px solid var(--color-card-border);
+        }
+
+        /* Activity Log */
+        .activity-log {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .activity-log-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-12);
+            padding: var(--space-12);
+            border-bottom: 1px solid var(--color-card-border);
+            transition: background var(--duration-fast) var(--ease-standard);
+        }
+
+        .activity-log-item:hover {
+            background: var(--color-secondary);
+        }
+
+        .activity-log-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-log-time {
+            font-family: var(--font-family-mono);
+            font-size: var(--font-size-xs);
+            color: var(--color-text-secondary);
+            min-width: 80px;
+        }
+
+        .activity-log-icon {
+            font-size: var(--font-size-lg);
+            min-width: 24px;
+            text-align: center;
+        }
+
+        .activity-log-text {
+            flex: 1;
+            font-size: var(--font-size-sm);
+            color: var(--color-text);
+        }
+
+        .activity-log-action {
+            padding: var(--space-4) var(--space-12);
+            font-size: var(--font-size-xs);
+            background: var(--color-secondary);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all var(--duration-fast) var(--ease-standard);
+        }
+
+        .activity-log-action:hover {
+            background: var(--color-secondary-hover);
+        }
+
+        .activity-log-item--success .activity-log-icon {
+            color: var(--color-success);
+        }
+
+        .activity-log-item--warning .activity-log-icon {
+            color: var(--color-warning);
+        }
+
+        .activity-log-item--error .activity-log-icon {
+            color: var(--color-error);
+        }
+
+        .activity-log-item--info .activity-log-icon {
+            color: var(--color-info);
+        }
+
+        /* Shift Management */
+        .shift-controls {
+            display: flex;
+            gap: var(--space-12);
+            margin-bottom: var(--space-20);
+        }
+
+        .shift-metrics {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--space-12);
+        }
+
+        @media (min-width: 768px) {
+            .shift-metrics {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .shift-metrics {
+                grid-template-columns: repeat(5, 1fr);
+            }
+        }
+
+        .shift-metric-card {
+            display: flex;
+            align-items: center;
+            gap: var(--space-12);
+            padding: var(--space-16);
+            background: var(--color-bg-1);
+            border: 1px solid var(--color-card-border);
+            border-radius: var(--radius-md);
+        }
+
+        .shift-metric-icon {
+            font-size: var(--font-size-3xl);
+            flex-shrink: 0;
+        }
+
+        .shift-metric-content {
+            flex: 1;
+        }
+
+        .shift-metric-label {
+            font-size: var(--font-size-xs);
+            color: var(--color-text-secondary);
+            margin-bottom: var(--space-4);
+        }
+
+        .shift-metric-value {
+            font-size: var(--font-size-xl);
+            font-weight: var(--font-weight-bold);
+            color: var(--color-text);
+        }
+
+        /* Scroll styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--color-secondary);
+            border-radius: var(--radius-sm);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--color-border);
+            border-radius: var(--radius-sm);
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--color-text-secondary);
+        }
+
+        /* Loading Animation */
+        @keyframes shimmer {
+            0% {
+                background-position: -1000px 0;
+            }
+            100% {
+                background-position: 1000px 0;
+            }
+        }
+
+        .skeleton {
+            animation: shimmer 2s infinite linear;
+            background: linear-gradient(
+                to right,
+                var(--color-secondary) 4%,
+                var(--color-secondary-hover) 25%,
+                var(--color-secondary) 36%
+            );
+            background-size: 1000px 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Mobile/Tablet Header -->
+        <header class="app-header">
+            <div class="header-left">
+                <div class="header-logo">
+                    <span class="header-logo-icon">🤖</span>
+                    <span class="header-title">UR20 Swarm</span>
+                </div>
+            </div>
+            <div class="header-center">
+                <div class="current-persona">
+                    <span class="persona-icon" id="current-persona-icon">👤</span>
+                    <span class="persona-name-mobile" id="current-persona-name">Operators</span>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="status-indicator">
+                    <span class="status-dot"></span>
+                    <span class="status-text" id="header-status">Online</span>
+                </div>
+                <button class="menu-toggle" id="menu-toggle" aria-label="Open navigation menu">
+                    ☰
+                </button>
+            </div>
+        </header>
+
+        <!-- Desktop Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">🤖</div>
+                <div class="sidebar-title">
+                    <div class="sidebar-app-name">UR20 Swarm Control</div>
+                    <div class="sidebar-version">v2.2.0</div>
+                </div>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Personas</div>
+                    <div class="nav-list">
+                        <a href="#" class="nav-item active" data-view="operator">
+                            <span class="nav-item-icon">👤</span>
+                            <div class="nav-item-content">
+                                <div class="nav-item-name">Operators</div>
+                                <div class="nav-item-desc">Simplified interface</div>
+                            </div>
+                        </a>
+                        <a href="#" class="nav-item" data-view="developer">
+                            <span class="nav-item-icon">👨💻</span>
+                            <div class="nav-item-content">
+                                <div class="nav-item-name">Developers</div>
+                                <div class="nav-item-desc">Full diagnostics</div>
+                            </div>
+                        </a>
+                        <a href="#" class="nav-item" data-view="demo">
+                            <span class="nav-item-icon">🎬</span>
+                            <div class="nav-item-content">
+                                <div class="nav-item-name">Demo</div>
+                                <div class="nav-item-desc">AI transparency</div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">System</div>
+                    <div class="nav-list">
+                        <a href="#" class="nav-item" data-view="settings">
+                            <span class="nav-item-icon">⚙️</span>
+                            <div class="nav-item-content">
+                                <div class="nav-item-name">Settings</div>
+                                <div class="nav-item-desc">Preferences</div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <div class="settings-item">
+                    <span class="settings-label">Theme</span>
+                    <button class="theme-toggle" id="desktop-theme-toggle" aria-label="Toggle theme">
+                        <span id="desktop-theme-icon">☀️</span>
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Bottom Sheet for Mobile -->
+        <div class="bottom-sheet-overlay" id="bottom-sheet-overlay"></div>
+        <div class="bottom-sheet" id="bottom-sheet">
+            <div class="bottom-sheet-handle">
+                <div class="bottom-sheet-handle-bar"></div>
+            </div>
+            <div class="bottom-sheet-header">
+                <h2 class="bottom-sheet-title">Navigation</h2>
+            </div>
+            <div class="bottom-sheet-content">
+                <div class="persona-list">
+                    <div class="persona-item active" data-view="operator">
+                        <span class="persona-item-icon">👤</span>
+                        <div class="persona-item-content">
+                            <div class="persona-item-name">Operators</div>
+                            <div class="persona-item-desc">Simplified interface for non-technical operators</div>
+                        </div>
+                        <span class="persona-item-check">✓</span>
+                    </div>
+                    <div class="persona-item" data-view="developer">
+                        <span class="persona-item-icon">👨💻</span>
+                        <div class="persona-item-content">
+                            <div class="persona-item-name">Developers</div>
+                            <div class="persona-item-desc">Full diagnostic interface with AI vision debug</div>
+                        </div>
+                        <span class="persona-item-check">✓</span>
+                    </div>
+                    <div class="persona-item" data-view="demo">
+                        <span class="persona-item-icon">🎬</span>
+                        <div class="persona-item-content">
+                            <div class="persona-item-name">Demo</div>
+                            <div class="persona-item-desc">Customer-facing demo with AI transparency</div>
+                        </div>
+                        <span class="persona-item-check">✓</span>
+                    </div>
+                    <div class="persona-item" data-view="settings">
+                        <span class="persona-item-icon">⚙️</span>
+                        <div class="persona-item-content">
+                            <div class="persona-item-name">Settings</div>
+                            <div class="persona-item-desc">App preferences and configuration</div>
+                        </div>
+                        <span class="persona-item-check">✓</span>
+                    </div>
+                </div>
+            </div>
+            <div class="bottom-sheet-settings">
+                <div class="settings-item">
+                    <span class="settings-label">Theme Mode</span>
+                    <button class="theme-toggle" id="mobile-theme-toggle" aria-label="Toggle theme">
+                        <span id="mobile-theme-icon">☀️</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Operator View -->
+            <div id="operator-view" class="view active">
+                <!-- Top Control Bar -->
+                <div class="card" style="margin-bottom: var(--space-16);">
+                    <div class="card-body" style="padding: var(--space-16);">
+                        <div style="display: flex; flex-wrap: wrap; gap: var(--space-12); align-items: center; justify-content: space-between;">
+                            <div style="display: flex; gap: var(--space-12); align-items: center; flex-wrap: wrap;">
+                                <div>
+                                    <label for="robot-selector" style="font-size: var(--font-size-sm); color: var(--color-text-secondary); display: block; margin-bottom: var(--space-4);">Select Robot</label>
+                                    <select id="robot-selector" style="min-width: 180px;">
+                                        <option value="all">All Robots</option>
+                                        <option value="UR20-001">Robot 1 (Lobach)</option>
+                                        <option value="UR20-002">Robot 2 (SEMAT)</option>
+                                        <option value="UR20-003">Robot 3 (Belgrade)</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <div style="font-size: var(--font-size-sm); color: var(--color-text-secondary); margin-bottom: var(--space-4);">System Health</div>
+                                    <div style="display: flex; align-items: center; gap: var(--space-8);">
+                                        <div style="font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold); color: var(--color-warning);">78%</div>
+                                        <span class="status-badge status-badge--warning">⚠️ 1 Error</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="display: flex; gap: var(--space-8); align-items: center;">
+                                <div style="text-align: right;">
+                                    <div style="font-size: var(--font-size-sm); color: var(--color-text-secondary);">Shift Start</div>
+                                    <div style="font-size: var(--font-size-base); font-weight: var(--font-weight-semibold);">08:00 AM</div>
+                                </div>
+                                <button class="btn btn--error" style="padding: var(--space-12); font-size: var(--font-size-2xl);">🚨</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Multi-Robot Status Grid -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">🤖 Robot Fleet Status</h2>
+                        <span class="status-badge status-badge--info">1/3 Active</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="robot-grid">
+                            <!-- Robot 1 - Active -->
+                            <div class="robot-card robot-card--active">
+                                <div class="robot-card-header">
+                                    <div>
+                                        <div class="robot-card-title">🤖 Robot 1</div>
+                                        <div class="robot-card-subtitle">UR20-001 • Lobach</div>
+                                    </div>
+                                    <span class="status-badge status-badge--success">ACTIVE</span>
+                                </div>
+                                <div class="robot-card-body">
+                                    <div class="robot-task">Sorting items by type</div>
+                                    <div class="robot-progress">
+                                        <div class="robot-progress-bar" style="width: 68%;"></div>
+                                    </div>
+                                    <div class="robot-metrics">
+                                        <div class="robot-metric">
+                                            <span class="robot-metric-icon">📦</span>
+                                            <span class="robot-metric-value">342</span>
+                                        </div>
+                                        <div class="robot-metric">
+                                            <span class="robot-metric-icon">🎥</span>
+                                            <span class="robot-metric-value">60 FPS</span>
+                                        </div>
+                                        <div class="robot-metric">
+                                            <span class="robot-metric-icon">🌡️</span>
+                                            <span class="robot-metric-value">45°C</span>
+                                        </div>
+                                        <div class="robot-metric">
+                                            <span class="robot-metric-icon">🔋</span>
+                                            <span class="robot-metric-value">87%</span>
+                                        </div>
+                                    </div>
+                                    <div class="robot-actions">
+                                        <button class="btn btn--secondary" style="flex: 1; padding: var(--space-8);">⏸ Pause</button>
+                                        <button class="btn btn--secondary" style="flex: 1; padding: var(--space-8);">🔄 Restart</button>
+                                    </div>
+                                    <div class="robot-recent">
+                                        <div class="robot-recent-title">Recent Activity:</div>
+                                        <div class="robot-recent-item">✅ Task completed - 2m ago</div>
+                                        <div class="robot-recent-item">📦 42 items processed - 5m ago</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Robot 2 - Idle -->
+                            <div class="robot-card robot-card--idle">
+                                <div class="robot-card-header">
+                                    <div>
+                                        <div class="robot-card-title">🤖 Robot 2</div>
+                                        <div class="robot-card-subtitle">UR20-002 • SEMAT</div>
+                                    </div>
+                                    <span class="status-badge status-badge--info">IDLE</span>
+                                </div>
+                                <div class="robot-card-body">
+                                    <div class="robot-task">Waiting for task assignment</div>
+                                    <div class="robot-progress">
+                                        <div class="robot-progress-bar" style="width: 0%;"></div>
+                                    </div>
+                                    <div class="robot-metrics">
+                                        <div class="robot-metric">
+                                            <span class="robot-metric-icon">📦</span>
+                                            <span class="robot-metric-value">156</span>
+                                        </div>
+                                        <div class="robot-metric">
+                                            <span class="robot-metric-icon">🎥</span>
+                                            <span class="robot-metric-value">60 FPS</span>
+                                        </div>
+                                        <div class="robot-metric">
+                                            <span class="robot-metric-icon">🌡️</span>
+                                            <span class="robot-metric-value">38°C</span>
+                                        </div>
+                                        <div class="robot-metric">
+                                            <span class="robot-metric-icon">🔋</span>
+                                            <span class="robot-metric-value">92%</span>
+                                        </div>
+                                    </div>
+                                    <div class="robot-actions">
+                                        <button class="btn btn--success" style="flex: 1; padding: var(--space-8);">▶ Start</button>
+                                        <button class="btn btn--secondary" style="flex: 1; padding: var(--space-8);">⚙️ Config</button>
+                                    </div>
+                                    <div class="robot-recent">
+                                        <div class="robot-recent-title">Recent Activity:</div>
+                                        <div class="robot-recent-item">⏸ Paused by operator - 15m ago</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Robot 3 - Error -->
+                            <div class="robot-card robot-card--error">
+                                <div class="robot-card-header">
+                                    <div>
+                                        <div class="robot-card-title">🤖 Robot 3</div>
+                                        <div class="robot-card-subtitle">UR20-003 • Belgrade</div>
+                                    </div>
+                                    <span class="status-badge status-badge--error">ERROR</span>
+                                </div>
+                                <div class="robot-card-body">
+                                    <div class="robot-task" style="color: var(--color-error);">⚠️ Sensor calibration issue</div>
+                                    <div class="robot-progress">
+                                        <div class="robot-progress-bar" style="width: 0%; background: var(--color-error);"></div>
+                                    </div>
+                                    <div class="robot-metrics">
+                                        <div class="robot-metric">
+                                            <span class="robot-metric-icon">📦</span>
+                                            <span class="robot-metric-value">89</span>
+                                        </div>
+                                        <div class="robot-metric">
+                                            <span class="robot-metric-icon">🎥</span>
+                                            <span class="robot-metric-value">0 FPS</span>
+                                        </div>
+                                        <div class="robot-metric">
+                                            <span class="robot-metric-icon">🌡️</span>
+                                            <span class="robot-metric-value" style="color: var(--color-warning);">52°C</span>
+                                        </div>
+                                        <div class="robot-metric">
+                                            <span class="robot-metric-icon">🔋</span>
+                                            <span class="robot-metric-value" style="color: var(--color-error);">45%</span>
+                                        </div>
+                                    </div>
+                                    <div class="robot-actions">
+                                        <button class="btn btn--error" style="flex: 1; padding: var(--space-8);">🚨 E-Stop</button>
+                                        <button class="btn btn--primary" style="flex: 1; padding: var(--space-8);">🔧 Fix</button>
+                                    </div>
+                                    <div class="robot-recent">
+                                        <div class="robot-recent-title">Recent Activity:</div>
+                                        <div class="robot-recent-item" style="color: var(--color-error);">❌ Calibration failed - 8m ago</div>
+                                        <div class="robot-recent-item" style="color: var(--color-warning);">⚠️ High temp detected - 12m ago</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Camera Grid -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">📹 Live Camera Feeds</h2>
+                        <button class="btn btn--secondary" style="padding: var(--space-6) var(--space-12);">🔄 Refresh</button>
+                    </div>
+                    <div class="card-body">
+                        <div class="camera-grid">
+                            <div class="camera-main" id="camera-main">
+                                <div class="camera-feed">
+                                    <div class="camera-label">📹 Main Feed - Robot 1 (Lobach)</div>
+                                    <div class="camera-placeholder">Live Camera Stream</div>
+                                    <div class="camera-overlay">
+                                        <span class="camera-status">🔴 REC</span>
+                                        <span class="camera-fps">60 FPS</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="camera-thumbnails">
+                                <div class="camera-thumbnail" data-camera="cam-1">
+                                    <div class="camera-feed">
+                                        <div class="camera-label">Gripper View</div>
+                                        <div class="camera-placeholder-small">📹</div>
+                                    </div>
+                                </div>
+                                <div class="camera-thumbnail" data-camera="cam-2">
+                                    <div class="camera-feed">
+                                        <div class="camera-label">Robot 2</div>
+                                        <div class="camera-placeholder-small">📹</div>
+                                    </div>
+                                </div>
+                                <div class="camera-thumbnail" data-camera="cam-3">
+                                    <div class="camera-feed">
+                                        <div class="camera-label">Robot 3</div>
+                                        <div class="camera-placeholder-small">📹</div>
+                                    </div>
+                                </div>
+                                <div class="camera-thumbnail" data-camera="cam-4">
+                                    <div class="camera-feed">
+                                        <div class="camera-label">Overview</div>
+                                        <div class="camera-placeholder-small">📹</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Fixes Section -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">⚡ Quick Fixes</h2>
+                        <span class="status-badge status-badge--info">One-Click Actions</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="quick-fixes-grid">
+                            <button class="quick-fix-btn quick-fix-btn--primary">
+                                <span class="quick-fix-icon">🔄</span>
+                                <span class="quick-fix-label">Restart Task</span>
+                            </button>
+                            <button class="quick-fix-btn quick-fix-btn--success">
+                                <span class="quick-fix-icon">✓</span>
+                                <span class="quick-fix-label">Clear Error</span>
+                            </button>
+                            <button class="quick-fix-btn quick-fix-btn--info">
+                                <span class="quick-fix-icon">📷</span>
+                                <span class="quick-fix-label">Recalibrate</span>
+                            </button>
+                            <button class="quick-fix-btn quick-fix-btn--error">
+                                <span class="quick-fix-icon">🚨</span>
+                                <span class="quick-fix-label">E-Stop</span>
+                            </button>
+                            <button class="quick-fix-btn quick-fix-btn--warning">
+                                <span class="quick-fix-icon">⚡</span>
+                                <span class="quick-fix-label">Full Reset</span>
+                            </button>
+                            <button class="quick-fix-btn quick-fix-btn--secondary">
+                                <span class="quick-fix-icon">🔧</span>
+                                <span class="quick-fix-label">Diagnostics</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Error/Issue Reporting Form -->
+                <div class="card">
+                    <div class="card-header" style="cursor: pointer;" onclick="toggleErrorForm()">
+                        <h2 class="card-title">🐛 Report Issue</h2>
+                        <button class="btn btn--secondary" style="padding: var(--space-6) var(--space-12);">
+                            <span id="error-form-toggle">▼ Expand</span>
+                        </button>
+                    </div>
+                    <div class="card-body" id="error-form-content" style="display: none;">
+                        <form id="error-report-form">
+                            <div class="form-row">
+                                <div class="form-group" style="flex: 1;">
+                                    <label class="form-label" for="error-type">Issue Type *</label>
+                                    <select id="error-type" class="form-control" required>
+                                        <option value="">Select issue type...</option>
+                                        <option value="hardware">Hardware Error</option>
+                                        <option value="software">Software Crash</option>
+                                        <option value="vision">Vision System</option>
+                                        <option value="motion">Motion Planning</option>
+                                        <option value="calibration">Sensor Calibration</option>
+                                        <option value="network">Network Issue</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                </div>
+                                <div class="form-group" style="flex: 1;">
+                                    <label class="form-label" for="error-robot">Robot *</label>
+                                    <select id="error-robot" class="form-control" required>
+                                        <option value="UR20-001">Robot 1 (Lobach)</option>
+                                        <option value="UR20-002">Robot 2 (SEMAT)</option>
+                                        <option value="UR20-003">Robot 3 (Belgrade)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group" style="flex: 1;">
+                                    <label class="form-label" for="error-severity">Severity *</label>
+                                    <select id="error-severity" class="form-control" required>
+                                        <option value="low">Low - Minor inconvenience</option>
+                                        <option value="medium">Medium - Affects performance</option>
+                                        <option value="high">High - Major disruption</option>
+                                        <option value="critical">Critical - System down</option>
+                                    </select>
+                                </div>
+                                <div class="form-group" style="flex: 1;">
+                                    <label class="form-label" for="error-location">Location *</label>
+                                    <select id="error-location" class="form-control" required>
+                                        <option value="lobach">Lobachevsky Lab</option>
+                                        <option value="semat">SEMAT</option>
+                                        <option value="belgrade">Belgrade</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="error-description">Description *</label>
+                                <textarea id="error-description" class="form-control" rows="4" placeholder="Describe what happened, what you expected, and any steps to reproduce..." required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Attachments (Optional)</label>
+                                <div style="display: flex; gap: var(--space-8);">
+                                    <button type="button" class="btn btn--secondary" style="flex: 1;" onclick="captureScreenshot()">📸 Capture Screenshot</button>
+                                    <button type="button" class="btn btn--secondary" style="flex: 1;">📎 Upload File</button>
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn--primary" style="flex: 1;">Submit Report</button>
+                                <button type="button" class="btn btn--secondary" onclick="resetErrorForm()">Clear Form</button>
+                            </div>
+                        </form>
+                        
+                        <div style="margin-top: var(--space-24); padding-top: var(--space-24); border-top: 1px solid var(--color-card-border);">
+                            <div style="font-size: var(--font-size-base); font-weight: var(--font-weight-semibold); margin-bottom: var(--space-12);">Recent Reports</div>
+                            <div class="recent-reports">
+                                <div class="recent-report-item">
+                                    <div style="display: flex; justify-content: space-between; align-items: start;">
+                                        <div>
+                                            <span class="status-badge status-badge--error" style="font-size: var(--font-size-xs);">Critical</span>
+                                            <span style="font-weight: var(--font-weight-semibold); margin-left: var(--space-8);">Sensor Calibration</span>
+                                        </div>
+                                        <span style="font-size: var(--font-size-sm); color: var(--color-text-secondary);">8m ago</span>
+                                    </div>
+                                    <div style="font-size: var(--font-size-sm); color: var(--color-text-secondary); margin-top: var(--space-4);">Robot 3 - Belgrade</div>
+                                </div>
+                                <div class="recent-report-item">
+                                    <div style="display: flex; justify-content: space-between; align-items: start;">
+                                        <div>
+                                            <span class="status-badge status-badge--warning" style="font-size: var(--font-size-xs);">Medium</span>
+                                            <span style="font-weight: var(--font-weight-semibold); margin-left: var(--space-8);">High Temperature</span>
+                                        </div>
+                                        <span style="font-size: var(--font-size-sm); color: var(--color-text-secondary);">12m ago</span>
+                                    </div>
+                                    <div style="font-size: var(--font-size-sm); color: var(--color-text-secondary); margin-top: var(--space-4);">Robot 3 - Belgrade</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Shift Management -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">⏰ Shift Management</h2>
+                        <span class="status-badge status-badge--success">Active Shift</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="shift-controls">
+                            <button class="btn btn--success btn--large" style="flex: 1;">▶ Start Shift</button>
+                            <button class="btn btn--error btn--large" style="flex: 1;">⏹ End Shift</button>
+                        </div>
+                        <div class="shift-metrics">
+                            <div class="shift-metric-card">
+                                <div class="shift-metric-icon">📦</div>
+                                <div class="shift-metric-content">
+                                    <div class="shift-metric-label">Items Today</div>
+                                    <div class="shift-metric-value">2,145</div>
+                                </div>
+                            </div>
+                            <div class="shift-metric-card">
+                                <div class="shift-metric-icon">⚠️</div>
+                                <div class="shift-metric-content">
+                                    <div class="shift-metric-label">Errors Today</div>
+                                    <div class="shift-metric-value">3</div>
+                                </div>
+                            </div>
+                            <div class="shift-metric-card">
+                                <div class="shift-metric-icon">⏱️</div>
+                                <div class="shift-metric-content">
+                                    <div class="shift-metric-label">Avg Time/Item</div>
+                                    <div class="shift-metric-value">8.5s</div>
+                                </div>
+                            </div>
+                            <div class="shift-metric-card">
+                                <div class="shift-metric-icon">📊</div>
+                                <div class="shift-metric-content">
+                                    <div class="shift-metric-label">Utilization</div>
+                                    <div class="shift-metric-value">87%</div>
+                                </div>
+                            </div>
+                            <div class="shift-metric-card">
+                                <div class="shift-metric-icon">✓</div>
+                                <div class="shift-metric-content">
+                                    <div class="shift-metric-label">Success Rate</div>
+                                    <div class="shift-metric-value">99.2%</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Real-Time Activity Log -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">📋 Real-Time Activity Log</h2>
+                        <button class="btn btn--secondary" style="padding: var(--space-6) var(--space-12);">🔍 Filter</button>
+                    </div>
+                    <div class="card-body">
+                        <div class="activity-log">
+                            <div class="activity-log-item activity-log-item--success">
+                                <span class="activity-log-time">[14:35:22]</span>
+                                <span class="activity-log-icon">✓</span>
+                                <span class="activity-log-text">Task completed - 42 items processed</span>
+                                <button class="activity-log-action">Report</button>
+                            </div>
+                            <div class="activity-log-item activity-log-item--warning">
+                                <span class="activity-log-time">[14:32:10]</span>
+                                <span class="activity-log-icon">⚠️</span>
+                                <span class="activity-log-text">Temperature warning - Robot 3 at 58°C</span>
+                                <button class="activity-log-action">Report</button>
+                            </div>
+                            <div class="activity-log-item activity-log-item--info">
+                                <span class="activity-log-time">[14:28:45]</span>
+                                <span class="activity-log-icon">🔄</span>
+                                <span class="activity-log-text">Sensor drift detected - auto-calibrated</span>
+                                <button class="activity-log-action">Report</button>
+                            </div>
+                            <div class="activity-log-item activity-log-item--success">
+                                <span class="activity-log-time">[14:25:12]</span>
+                                <span class="activity-log-icon">✓</span>
+                                <span class="activity-log-text">Pallet delivered successfully</span>
+                                <button class="activity-log-action">Report</button>
+                            </div>
+                            <div class="activity-log-item activity-log-item--success">
+                                <span class="activity-log-time">[14:22:45]</span>
+                                <span class="activity-log-icon">✓</span>
+                                <span class="activity-log-text">Robot 1 started new task</span>
+                                <button class="activity-log-action">Report</button>
+                            </div>
+                            <div class="activity-log-item activity-log-item--info">
+                                <span class="activity-log-time">[14:20:33]</span>
+                                <span class="activity-log-icon">📷</span>
+                                <span class="activity-log-text">Camera calibration completed</span>
+                                <button class="activity-log-action">Report</button>
+                            </div>
+                            <div class="activity-log-item activity-log-item--error">
+                                <span class="activity-log-time">[14:15:22]</span>
+                                <span class="activity-log-icon">❌</span>
+                                <span class="activity-log-text">Robot 3 calibration failed - requires attention</span>
+                                <button class="activity-log-action">Report</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- System Overview Metrics -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">📊 System Overview</h2>
+                        <span class="status-badge status-badge--success">Online</span>
+                    </div>
+                    <div class="metrics-grid">
+                        <div class="metric-item">
+                            <div class="metric-label">Active Robots</div>
+                            <div class="metric-value">1<span class="metric-unit">/3</span></div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-label">Throughput</div>
+                            <div class="metric-value">342<span class="metric-unit">items/h</span></div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-label">Latency</div>
+                            <div class="metric-value">45<span class="metric-unit">ms</span></div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-label">Error Rate</div>
+                            <div class="metric-value">0.8<span class="metric-unit">%</span></div>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+
+            <!-- Developer View -->
+            <div id="developer-view" class="view">
+                <div class="content-grid">
+                    <div>
+                        <!-- AI Vision Camera -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="card-title">📹 AI Vision Camera</h2>
+                                <span class="status-badge status-badge--success">Live</span>
+                            </div>
+                            <div class="card-body">
+                                <div class="video-placeholder">
+                                    📹 Camera Feed (Live Stream)
+                                </div>
+                                <div class="btn-group">
+                                    <button class="btn btn--secondary btn--full">📸 Snapshot</button>
+                                    <button class="btn btn--secondary btn--full">🎥 Record</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Robot Parameters -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="card-title">⚙️ Robot Parameters</h2>
+                            </div>
+                            <div class="card-body">
+                                <div class="parameter-control">
+                                    <div class="parameter-label">
+                                        <span>Speed</span>
+                                        <span class="parameter-value" id="speed-value">85%</span>
+                                    </div>
+                                    <input type="range" class="slider" min="0" max="100" value="85" id="speed-slider">
+                                </div>
+                                
+                                <div class="parameter-control">
+                                    <div class="parameter-label">
+                                        <span>Scan Mode</span>
+                                    </div>
+                                    <div class="toggle-switch">
+                                        <div class="toggle-input active" id="scan-toggle">
+                                            <div class="toggle-slider"></div>
+                                        </div>
+                                        <span id="scan-label">Enabled</span>
+                                    </div>
+                                </div>
+
+                                <div class="parameter-control">
+                                    <div class="parameter-label">
+                                        <span>Location</span>
+                                    </div>
+                                    <select id="location-select">
+                                        <option value="Lab-Loba" selected>Lobachevsky Lab</option>
+                                        <option value="Lab-Moscow">Moscow Lab</option>
+                                        <option value="Lab-SPB">St. Petersburg Lab</option>
+                                    </select>
+                                </div>
+
+                                <div class="parameter-control">
+                                    <div class="parameter-label">
+                                        <span>Operation Mode</span>
+                                    </div>
+                                    <select id="mode-select">
+                                        <option value="endless" selected>Endless (Continuous)</option>
+                                        <option value="one-op">One Operation</option>
+                                        <option value="batch">Batch Processing</option>
+                                    </select>
+                                </div>
+
+                                <button class="btn btn--primary btn--full" style="margin-top: 16px;">Apply Changes</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <!-- Diagnostics -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="card-title">🔍 Diagnostics</h2>
+                            </div>
+                            <div class="card-body">
+                                <div class="metrics-grid">
+                                    <div class="metric-item">
+                                        <div class="metric-label">FPS</div>
+                                        <div class="metric-value">60</div>
+                                    </div>
+                                    <div class="metric-item">
+                                        <div class="metric-label">Inference Time</div>
+                                        <div class="metric-value">12<span class="metric-unit">ms</span></div>
+                                    </div>
+                                    <div class="metric-item" style="grid-column: 1 / -1;">
+                                        <div class="metric-label">Memory Usage</div>
+                                        <div class="metric-value">2.4<span class="metric-unit">GB / 8GB</span></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="info-list" style="margin-top: 16px;">
+                                    <div class="info-item">
+                                        <span class="info-label">Last Error</span>
+                                        <span class="info-value" style="color: var(--color-success);">None</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">Uptime</span>
+                                        <span class="info-value">48h 23m</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">Temperature</span>
+                                        <span class="info-value">42°C</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Debug Console -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="card-title">💻 Debug Console</h2>
+                            </div>
+                            <div class="card-body">
+                                <div class="debug-console">
+                                    <div class="debug-line">
+                                        <span class="debug-time">[14:23:45]</span>
+                                        <span class="debug-level-info">[INFO]</span>
+                                        <span>System initialized successfully</span>
+                                    </div>
+                                    <div class="debug-line">
+                                        <span class="debug-time">[14:23:46]</span>
+                                        <span class="debug-level-info">[INFO]</span>
+                                        <span>Camera feed connected</span>
+                                    </div>
+                                    <div class="debug-line">
+                                        <span class="debug-time">[14:23:47]</span>
+                                        <span class="debug-level-info">[INFO]</span>
+                                        <span>AI model loaded: YOLOv8-nano</span>
+                                    </div>
+                                    <div class="debug-line">
+                                        <span class="debug-time">[14:24:12]</span>
+                                        <span class="debug-level-warning">[WARN]</span>
+                                        <span>High CPU usage detected: 78%</span>
+                                    </div>
+                                    <div class="debug-line">
+                                        <span class="debug-time">[14:24:45]</span>
+                                        <span class="debug-level-info">[INFO]</span>
+                                        <span>Object detected: Box #2 (confidence: 96.8%)</span>
+                                    </div>
+                                    <div class="debug-line">
+                                        <span class="debug-time">[14:25:01]</span>
+                                        <span class="debug-level-info">[INFO]</span>
+                                        <span>Inference completed in 12ms</span>
+                                    </div>
+                                    <div class="debug-line">
+                                        <span class="debug-time">[14:25:15]</span>
+                                        <span class="debug-level-info">[INFO]</span>
+                                        <span>Memory usage: 2.4GB / 8GB</span>
+                                    </div>
+                                </div>
+                                <div style="margin-top: 16px; display: flex; gap: 8px;">
+                                    <button class="btn btn--secondary" style="flex: 1;">Clear</button>
+                                    <button class="btn btn--secondary" style="flex: 1;">Export Logs</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Error Tracking -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="card-title">⚠️ Error Tracking</h2>
+                                <span class="status-badge status-badge--success">All Clear</span>
+                            </div>
+                            <div class="card-body">
+                                <div class="activity-feed">
+                                    <div class="activity-item">
+                                        <div class="activity-icon">✅</div>
+                                        <div class="activity-content">
+                                            <div class="activity-title">No errors in the last 24 hours</div>
+                                            <div class="activity-time">System health: Excellent</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Swarm Control Actions -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">🎮 Swarm Control</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="btn-group">
+                            <button class="btn btn--success btn--large btn--full">
+                                <span style="font-size: 20px;">▶</span>
+                                <span>Start All Robots</span>
+                            </button>
+                            <button class="btn btn--secondary btn--large btn--full">
+                                <span style="font-size: 20px;">⏹</span>
+                                <span>Stop All Robots</span>
+                            </button>
+                        </div>
+                        <button class="btn btn--primary btn--large btn--full" style="margin-top: var(--space-12);">
+                            <span style="font-size: 20px;">🔄</span>
+                            <span>Restart All Systems</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Demo View -->
+            <div id="demo-view" class="view">
+                <div class="content-grid">
+                    <div>
+                        <!-- Live AI Decision Visualization -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="card-title">🧠 AI Decision Process</h2>
+                                <span class="status-badge status-badge--success">Active</span>
+                            </div>
+                            <div class="card-body">
+                                <div class="video-placeholder">
+                                    🎬 Live Video Stream with AI Overlay
+                                </div>
+                                <div class="info-list" style="margin-top: 16px;">
+                                    <div class="info-item">
+                                        <span class="info-label">Objects Detected</span>
+                                        <span class="info-value" style="color: var(--color-primary);">3</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <span class="info-label">Overall Confidence</span>
+                                        <span class="info-value">94.2%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Demo Controls -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="card-title">🎮 Demo Controls</h2>
+                            </div>
+                            <div class="card-body">
+                                <div class="btn-group">
+                                    <button class="btn btn--success btn--full">▶ Start Demo</button>
+                                    <button class="btn btn--secondary btn--full">⏸ Pause</button>
+                                </div>
+                                <button class="btn btn--primary btn--full" style="margin-top: 12px;">⏭ Next Frame</button>
+                                <button class="btn btn--secondary btn--full" style="margin-top: 12px;">🔄 Reset Demo</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <!-- Detected Objects -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="card-title">📦 Detected Objects</h2>
+                            </div>
+                            <div class="card-body">
+                                <div class="object-card selected">
+                                    <div class="object-header">
+                                        <span class="object-name">📦 Box #2</span>
+                                        <span class="status-badge status-badge--success">Selected</span>
+                                    </div>
+                                    <div class="metric-label">Confidence Score</div>
+                                    <div class="metric-value">96.8<span class="metric-unit">%</span></div>
+                                    <div class="confidence-bar">
+                                        <div class="confidence-fill" style="width: 96.8%;"></div>
+                                    </div>
+                                </div>
+
+                                <div class="object-card">
+                                    <div class="object-header">
+                                        <span class="object-name">📦 Box #1</span>
+                                    </div>
+                                    <div class="metric-label">Confidence Score</div>
+                                    <div class="metric-value">89.3<span class="metric-unit">%</span></div>
+                                    <div class="confidence-bar">
+                                        <div class="confidence-fill" style="width: 89.3%;"></div>
+                                    </div>
+                                </div>
+
+                                <div class="object-card">
+                                    <div class="object-header">
+                                        <span class="object-name">📦 Box #3</span>
+                                    </div>
+                                    <div class="metric-label">Confidence Score</div>
+                                    <div class="metric-value">92.1<span class="metric-unit">%</span></div>
+                                    <div class="confidence-bar">
+                                        <div class="confidence-fill" style="width: 92.1%;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- AI Decision Explanation -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h2 class="card-title">💡 Why This Decision?</h2>
+                            </div>
+                            <div class="card-body">
+                                <div class="decision-card">
+                                    <div class="decision-title">✅ Primary Reason</div>
+                                    <div class="decision-reason">
+                                        Box #2 has the highest confidence score (96.8%) and is positioned optimally for the robotic arm to grasp.
+                                    </div>
+                                </div>
+
+                                <div class="decision-card">
+                                    <div class="decision-title">📍 Position Analysis</div>
+                                    <div class="decision-reason">
+                                        Located in the center of the workspace, minimizing travel time and energy consumption.
+                                    </div>
+                                </div>
+
+                                <div class="decision-card">
+                                    <div class="decision-title">⚖️ Size &amp; Weight</div>
+                                    <div class="decision-reason">
+                                        Estimated weight: 1.2kg. Within optimal handling range for current gripper configuration.
+                                    </div>
+                                </div>
+
+                                <div class="decision-card">
+                                    <div class="decision-title">🚫 Why Not Others?</div>
+                                    <div class="decision-reason">
+                                        Box #1: Lower confidence (89.3%), partially occluded.<br>
+                                        Box #3: Requires arm rotation, increasing cycle time by 15%.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings View -->
+            <div id="settings-view" class="view">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">⚙️ Application Settings</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="parameter-control">
+                            <div class="parameter-label">
+                                <span>Theme Mode</span>
+                            </div>
+                            <div class="toggle-switch">
+                                <div class="toggle-input" id="settings-theme-toggle">
+                                    <div class="toggle-slider"></div>
+                                </div>
+                                <span id="settings-theme-label">Light Mode</span>
+                            </div>
+                        </div>
+
+                        <div class="parameter-control">
+                            <div class="parameter-label">
+                                <span>Update Frequency</span>
+                            </div>
+                            <select id="update-frequency">
+                                <option value="500">0.5 seconds</option>
+                                <option value="1000" selected>1 second</option>
+                                <option value="2000">2 seconds</option>
+                                <option value="5000">5 seconds</option>
+                            </select>
+                        </div>
+
+                        <div class="parameter-control">
+                            <div class="parameter-label">
+                                <span>Notifications</span>
+                            </div>
+                            <select id="notifications">
+                                <option value="all" selected>All Notifications</option>
+                                <option value="errors">Errors Only</option>
+                                <option value="critical">Critical Only</option>
+                                <option value="none">None</option>
+                            </select>
+                        </div>
+
+                        <div class="parameter-control">
+                            <div class="parameter-label">
+                                <span>Language</span>
+                            </div>
+                            <select id="language">
+                                <option value="en" selected>English</option>
+                                <option value="ru">Русский</option>
+                                <option value="zh">中文</option>
+                            </select>
+                        </div>
+
+                        <button class="btn btn--primary btn--full" style="margin-top: 24px;">Save Settings</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">ℹ️ About</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="info-list">
+                            <div class="info-item">
+                                <span class="info-label">Version</span>
+                                <span class="info-value">2.2.0</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Release Date</span>
+                                <span class="info-value">2025-11-27</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Environment</span>
+                                <span class="info-value">Production PoC</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">License</span>
+                                <span class="info-value">Enterprise</span>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--color-card-border);">
+                            <button class="btn btn--secondary btn--full">Check for Updates</button>
+                            <button class="btn btn--secondary btn--full" style="margin-top: 12px;">View Documentation</button>
+                            <button class="btn btn--secondary btn--full" style="margin-top: 12px;">Contact Support</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">🔐 Security</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="info-list">
+                            <div class="info-item">
+                                <span class="info-label">Connection Status</span>
+                                <span class="info-value" style="color: var(--color-success);">Secure</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Last Login</span>
+                                <span class="info-value">Today, 14:23</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Session Timeout</span>
+                                <span class="info-value">30 minutes</span>
+                            </div>
+                        </div>
+                        
+                        <button class="btn btn--error btn--full" style="margin-top: 24px;">Sign Out</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // State Management
+        const AppState = {
+            currentView: 'operator',
+            theme: 'light',
+            bottomSheetOpen: false,
+            settings: {
+                updateFrequency: 1000,
+                notifications: 'all',
+                language: 'en'
+            }
+        };
+
+        // Persona Configuration
+        const Personas = {
+            operator: { icon: '👤', name: 'Operators' },
+            developer: { icon: '👨💻', name: 'Developers' },
+            demo: { icon: '🎬', name: 'Demo' },
+            settings: { icon: '⚙️', name: 'Settings' }
+        };
+
+        // DOM Elements
+        const elements = {
+            menuToggle: document.getElementById('menu-toggle'),
+            bottomSheetOverlay: document.getElementById('bottom-sheet-overlay'),
+            bottomSheet: document.getElementById('bottom-sheet'),
+            currentPersonaIcon: document.getElementById('current-persona-icon'),
+            currentPersonaName: document.getElementById('current-persona-name'),
+            mobileThemeToggle: document.getElementById('mobile-theme-toggle'),
+            desktopThemeToggle: document.getElementById('desktop-theme-toggle'),
+            settingsThemeToggle: document.getElementById('settings-theme-toggle'),
+            speedSlider: document.getElementById('speed-slider'),
+            speedValue: document.getElementById('speed-value'),
+            scanToggle: document.getElementById('scan-toggle'),
+            scanLabel: document.getElementById('scan-label')
+        };
+
+        // View Switching
+        function switchView(viewName) {
+            // Hide all views
+            document.querySelectorAll('.view').forEach(view => {
+                view.classList.remove('active');
+            });
+            
+            // Show selected view
+            const targetView = document.getElementById(`${viewName}-view`);
+            if (targetView) {
+                targetView.classList.add('active');
+            }
+            
+            // Update navigation states
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+                if (item.dataset.view === viewName) {
+                    item.classList.add('active');
+                }
+            });
+            
+            document.querySelectorAll('.persona-item').forEach(item => {
+                item.classList.remove('active');
+                if (item.dataset.view === viewName) {
+                    item.classList.add('active');
+                }
+            });
+            
+            // Update header persona
+            const persona = Personas[viewName];
+            if (persona) {
+                elements.currentPersonaIcon.textContent = persona.icon;
+                elements.currentPersonaName.textContent = persona.name;
+            }
+            
+            // Update state
+            AppState.currentView = viewName;
+            
+            // Close bottom sheet on mobile
+            closeBottomSheet();
+        }
+
+        // Bottom Sheet Controls
+        function openBottomSheet() {
+            elements.bottomSheetOverlay.classList.add('active');
+            elements.bottomSheet.classList.add('active');
+            AppState.bottomSheetOpen = true;
+        }
+
+        function closeBottomSheet() {
+            elements.bottomSheetOverlay.classList.remove('active');
+            elements.bottomSheet.classList.remove('active');
+            AppState.bottomSheetOpen = false;
+        }
+
+        // Theme Management
+        function toggleTheme() {
+            AppState.theme = AppState.theme === 'light' ? 'dark' : 'light';
+            document.documentElement.setAttribute('data-theme', AppState.theme);
+            updateThemeIcons();
+        }
+
+        function updateThemeIcons() {
+            const icon = AppState.theme === 'light' ? '☀️' : '🌙';
+            const label = AppState.theme === 'light' ? 'Light Mode' : 'Dark Mode';
+            
+            document.getElementById('mobile-theme-icon').textContent = icon;
+            document.getElementById('desktop-theme-icon').textContent = icon;
+            document.getElementById('settings-theme-label').textContent = label;
+            
+            const settingsToggle = elements.settingsThemeToggle;
+            if (AppState.theme === 'dark') {
+                settingsToggle.classList.add('active');
+            } else {
+                settingsToggle.classList.remove('active');
+            }
+        }
+
+        // Event Listeners
+        elements.menuToggle.addEventListener('click', () => {
+            if (AppState.bottomSheetOpen) {
+                closeBottomSheet();
+            } else {
+                openBottomSheet();
+            }
+        });
+
+        elements.bottomSheetOverlay.addEventListener('click', closeBottomSheet);
+
+        // Bottom Sheet Handle Swipe
+        let touchStartY = 0;
+        elements.bottomSheet.querySelector('.bottom-sheet-handle').addEventListener('touchstart', (e) => {
+            touchStartY = e.touches[0].clientY;
+        });
+
+        elements.bottomSheet.querySelector('.bottom-sheet-handle').addEventListener('touchmove', (e) => {
+            const touchY = e.touches[0].clientY;
+            const deltaY = touchY - touchStartY;
+            
+            if (deltaY > 50) {
+                closeBottomSheet();
+            }
+        });
+
+        // Navigation Click Handlers
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                const viewName = item.dataset.view;
+                switchView(viewName);
+            });
+        });
+
+        document.querySelectorAll('.persona-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const viewName = item.dataset.view;
+                switchView(viewName);
+            });
+        });
+
+        // Theme Toggle Handlers
+        elements.mobileThemeToggle.addEventListener('click', toggleTheme);
+        elements.desktopThemeToggle.addEventListener('click', toggleTheme);
+        elements.settingsThemeToggle.addEventListener('click', toggleTheme);
+
+        // Speed Slider
+        elements.speedSlider.addEventListener('input', (e) => {
+            elements.speedValue.textContent = e.target.value + '%';
+        });
+
+        // Scan Toggle
+        elements.scanToggle.addEventListener('click', () => {
+            elements.scanToggle.classList.toggle('active');
+            elements.scanLabel.textContent = elements.scanToggle.classList.contains('active') ? 'Enabled' : 'Disabled';
+        });
+
+        // Keyboard Navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && AppState.bottomSheetOpen) {
+                closeBottomSheet();
+            }
+        });
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check system theme preference
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                AppState.theme = 'dark';
+                document.documentElement.setAttribute('data-theme', 'dark');
+            }
+            updateThemeIcons();
+            
+            // Set initial view
+            switchView('operator');
+            
+            console.log('UR20 Swarm Control v2.2.0 initialized');
+        });
+
+        // Error Form Toggle
+        function toggleErrorForm() {
+            const content = document.getElementById('error-form-content');
+            const toggle = document.getElementById('error-form-toggle');
+            if (content.style.display === 'none') {
+                content.style.display = 'block';
+                toggle.textContent = '▲ Collapse';
+            } else {
+                content.style.display = 'none';
+                toggle.textContent = '▼ Expand';
+            }
+        }
+
+        function resetErrorForm() {
+            document.getElementById('error-report-form').reset();
+        }
+
+        function captureScreenshot() {
+            alert('Screenshot capture would be implemented here. In production, this would capture the current view.');
+        }
+
+        // Handle error form submission
+        document.addEventListener('DOMContentLoaded', () => {
+            const errorForm = document.getElementById('error-report-form');
+            if (errorForm) {
+                errorForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    alert('Error report submitted! In production, this would send to the backend.');
+                    resetErrorForm();
+                    toggleErrorForm();
+                });
+            }
+        });
+
+        // Camera thumbnail switching
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('.camera-thumbnail')) {
+                const thumbnail = e.target.closest('.camera-thumbnail');
+                const cameraId = thumbnail.dataset.camera;
+                alert(`Switching to camera: ${cameraId}`);
+            }
+        });
+
+        // Quick fix button handlers
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('.quick-fix-btn')) {
+                const btn = e.target.closest('.quick-fix-btn');
+                const label = btn.querySelector('.quick-fix-label').textContent;
+                alert(`Executing: ${label}`);
+            }
+        });
+
+        // Activity log report buttons
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('activity-log-action')) {
+                const logItem = e.target.closest('.activity-log-item');
+                const logText = logItem.querySelector('.activity-log-text').textContent;
+                alert(`Reporting issue: ${logText}`);
+            }
+        });
+
+        // Simulate real-time updates (for demo purposes)
+        setInterval(() => {
+            // Update metrics with slight variations
+            const metricValues = document.querySelectorAll('.metric-value');
+            metricValues.forEach(el => {
+                if (el.textContent.includes('items/h')) {
+                    const current = parseInt(el.textContent);
+                    const variation = Math.floor(Math.random() * 10) - 5;
+                    el.textContent = (current + variation) + el.querySelector('.metric-unit').textContent;
+                }
+            });
+        }, 5000);
+    </script>
+</body>
+</html>
